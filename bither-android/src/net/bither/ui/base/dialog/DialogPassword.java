@@ -60,26 +60,26 @@ import java.util.concurrent.locks.ReentrantLock;
 public class DialogPassword extends Dialog implements OnDismissListener,
         TextView.OnEditorActionListener {
 
-    private View container;
-    private LinearLayout llInput;
-    private LinearLayout llChecking;
-    private TextView tvTitle;
-    private TextView tvError;
-    private EditText etPassword;
-    private EditText etPasswordConfirm;
-    private Button btnOk;
-    private Button btnCancel;
-    private TextView tvPasswordLength;
-    private TextView tvPasswordStrength;
-    private FrameLayout flPasswordStrength;
-    private ProgressBar pbPasswordStrength;
+    private View                      container;
+    private LinearLayout              llInput;
+    private LinearLayout              llChecking;
+    private TextView                  tvTitle;
+    private TextView                  tvError;
+    private EditText                  etPassword;
+    private EditText                  etPasswordConfirm;
+    private Button                    btnOk;
+    private Button                    btnCancel;
+    private TextView                  tvPasswordLength;
+    private TextView                  tvPasswordStrength;
+    private FrameLayout               flPasswordStrength;
+    private ProgressBar               pbPasswordStrength;
     private PasswordEntryKeyboardView kv;
-    private PasswordSeed passwordSeed;
-    private IDialogPasswordListener listener;
-    private ICheckPasswordListener checkPasswordListener;
+    private PasswordSeed              passwordSeed;
+    private IDialogPasswordListener   listener;
+    private ICheckPasswordListener    checkPasswordListener;
     private boolean passwordEntered = false;
-    private boolean checkPre = true;
-    private boolean cancelable = true;
+    private boolean checkPre        = true;
+    private boolean cancelable      = true;
     private boolean needCancelEvent = false;
     private ExecutorService executor;
 
@@ -153,7 +153,7 @@ public class DialogPassword extends Dialog implements OnDismissListener,
         btnOk.setEnabled(false);
         int passwordLength = etPassword.length();
         if (passwordLength >= 6 && passwordLength <= getContext().getResources().getInteger(R
-                .integer.password_length_max)) {
+                                                                                                    .integer.password_length_max)) {
             if (etPasswordConfirm.getVisibility() == View.VISIBLE) {
                 int passwordConfirmLength = etPasswordConfirm.length();
                 if (passwordConfirmLength >= 6 && passwordConfirmLength <= getContext()
@@ -228,11 +228,11 @@ public class DialogPassword extends Dialog implements OnDismissListener,
         tvTitle.setText(resource);
     }
 
-    private View.OnClickListener okClick = new View.OnClickListener() {
+    private View.OnClickListener okClick               = new View.OnClickListener() {
 
         @Override
         public void onClick(View v) {
-            SecureCharSequence password = new SecureCharSequence(etPassword.getText());
+            SecureCharSequence password        = new SecureCharSequence(etPassword.getText());
             SecureCharSequence passwordConfirm = new SecureCharSequence(etPasswordConfirm.getText());
             if (passwordSeed == null && checkPre) {
                 if (!password.equals(passwordConfirm)) {
@@ -255,18 +255,18 @@ public class DialogPassword extends Dialog implements OnDismissListener,
                     if (strength.warning()) {
                         new DialogConfirmTask(getContext(), String.format(getContext().getString
                                 (R.string.password_strength_warning), strength.getName()), new
-                                Runnable() {
-                            @Override
-                            public void run() {
-                                ThreadUtil.runOnMainThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        passwordEntered = true;
-                                        dismiss();
-                                    }
-                                });
-                            }
-                        }).show();
+                                                      Runnable() {
+                                                          @Override
+                                                          public void run() {
+                                                              ThreadUtil.runOnMainThread(new Runnable() {
+                                                                  @Override
+                                                                  public void run() {
+                                                                      passwordEntered = true;
+                                                                      dismiss();
+                                                                  }
+                                                              });
+                                                          }
+                                                      }).show();
                         return;
                     }
                 }
@@ -283,7 +283,7 @@ public class DialogPassword extends Dialog implements OnDismissListener,
             }
         }
     };
-    private CheckListener passwordCheckListener = new CheckListener() {
+    private CheckListener        passwordCheckListener = new CheckListener() {
 
         @Override
         public void onCheckBegin(Check check) {
@@ -313,7 +313,7 @@ public class DialogPassword extends Dialog implements OnDismissListener,
             }
         }
     };
-    private TextWatcher passwordWatcher = new TextWatcher() {
+    private TextWatcher          passwordWatcher       = new TextWatcher() {
         private SecureCharSequence password;
         private SecureCharSequence passwordConfirm;
 
@@ -434,10 +434,10 @@ public class DialogPassword extends Dialog implements OnDismissListener,
     public static final class PasswordGetter implements IDialogPasswordListener, IPasswordGetter {
 
 
-        private ReentrantLock getPasswordLock = new ReentrantLock();
-        private Condition withPasswordCondition = getPasswordLock.newCondition();
-        private Context context;
-        private SecureCharSequence password;
+        private ReentrantLock getPasswordLock       = new ReentrantLock();
+        private Condition     withPasswordCondition = getPasswordLock.newCondition();
+        private Context                 context;
+        private SecureCharSequence      password;
         private IPasswordGetterDelegate delegate;
 
         public PasswordGetter(Context context) {

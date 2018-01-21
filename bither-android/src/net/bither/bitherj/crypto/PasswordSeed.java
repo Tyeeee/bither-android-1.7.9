@@ -31,6 +31,7 @@ public class PasswordSeed {
     private String keyStr;
 
     public PasswordSeed(String str) {
+        LogUtil.i("------------------------------------", "PasswordSeed start");
         LogUtil.i("------>str:", str);
         int indexOfSplit = QRCodeUtil.indexOfOfPasswordSeed(str);
         LogUtil.i("------>indexOfSplit:", String.valueOf(indexOfSplit));
@@ -38,18 +39,21 @@ public class PasswordSeed {
         LogUtil.i("------>address:", address);
         this.keyStr = str.substring(indexOfSplit + 1);
         LogUtil.i("------>keyStr:", keyStr);
+        LogUtil.i("------------------------------------", "PasswordSeed end");
     }
 
 
     public PasswordSeed(String address, String encryptedKey) {
         this.address = address;
         this.keyStr = encryptedKey;
+        LogUtil.i("------------------------------------", "PasswordSeed start");
         LogUtil.i("------>address:", address);
         LogUtil.i("------>encryptedKey:", encryptedKey);
+        LogUtil.i("------------------------------------", "PasswordSeed end");
     }
 
     public boolean checkPassword(CharSequence password) {
-        ECKey ecKey = PrivateKeyUtil.getECKeyFromSingleString(keyStr, password);
+        ECKey  ecKey = PrivateKeyUtil.getECKeyFromSingleString(keyStr, password);
         String ecKeyAddress;
         if (ecKey == null) {
             return false;
@@ -84,7 +88,9 @@ public class PasswordSeed {
     public String toPasswordSeedString() {
         try {
             String passwordSeedString = Base58.bas58ToHexWithAddress(this.address) + QRCodeUtil.QR_CODE_SPLIT + QRCodeUtil.getNewVersionEncryptPrivKey(this.keyStr);
+            LogUtil.i("------------------------------------", "toPasswordSeedString start");
             LogUtil.i("------>passwordSeedString:", passwordSeedString);
+            LogUtil.i("------------------------------------", "toPasswordSeedString end");
             return passwordSeedString;
         } catch (AddressFormatException e) {
             throw new RuntimeException("passwordSeed  address is format error ," + this.address);

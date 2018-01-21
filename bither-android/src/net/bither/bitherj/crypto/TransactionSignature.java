@@ -27,6 +27,7 @@ import java.math.BigInteger;
  * the additional SIGHASH mode byte that is used.
  */
 public class TransactionSignature extends ECKey.ECDSASignature {
+    
     public enum SigHash {
         ALL(0),         // 1
         NONE(1),       // 2

@@ -72,7 +72,9 @@ public class XRandom extends SecureRandom {
 
     @Override
     public byte[] generateSeed(int numBytes) {
+        LogUtil.i("------------------------------------", "generateSeed start");
         LogUtil.i("------>generateSeed:", new String(getRandomBytes(numBytes)));
+        LogUtil.i("------------------------------------", "generateSeed end");
         return getRandomBytes(numBytes);
     }
 }

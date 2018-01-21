@@ -48,10 +48,10 @@ public class KeyUtil {
         List<Address> addressList = new ArrayList<Address>();
         for (int i = 0; i < count; i++) {
             XRandom xRandom = new XRandom(iuEntropy);
-            ECKey ecKey = ECKey.generateECKey(xRandom);
+            ECKey   ecKey   = ECKey.generateECKey(xRandom);
             ecKey = PrivateKeyUtil.encrypt(ecKey, password);
             Address address = new Address(ecKey.toAddress(),
-                    ecKey.getPubKey(), PrivateKeyUtil.getEncryptedString(ecKey), true, ecKey.isFromXRandom());
+                                          ecKey.getPubKey(), PrivateKeyUtil.getEncryptedString(ecKey), true, ecKey.isFromXRandom());
             ecKey.clearPrivateKey();
             addressList.add(address);
             AddressManager.getInstance().addAddress(address);
@@ -73,7 +73,7 @@ public class KeyUtil {
         if (service != null) {
             service.stopAndUnregister();
         }
-        boolean hasPrivateKey = false;
+        boolean        hasPrivateKey  = false;
         AddressManager addressManager = AddressManager.getInstance();
         //need reverse addressList
         Collections.reverse(addressList);

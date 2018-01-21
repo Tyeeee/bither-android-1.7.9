@@ -38,18 +38,18 @@ import java.util.Set;
 public class AddressManager implements HDMKeychain.HDMAddressChangeDelegate,
         EnterpriseHDMKeychain.EnterpriseHDMKeychainAddressChangeDelegate {
 
-    private static final Logger log = LoggerFactory.getLogger(AddressManager.class);
-    private final byte[] lock = new byte[0];
-    private static AddressManager uniqueInstance = new AddressManager();
+    private static final Logger         log            = LoggerFactory.getLogger(AddressManager.class);
+    private final        byte[]         lock           = new byte[0];
+    private static       AddressManager uniqueInstance = new AddressManager();
 
-    protected List<Address> privKeyAddresses = new ArrayList<Address>();
-    protected List<Address> watchOnlyAddresses = new ArrayList<Address>();
-    protected List<Address> trashAddresses = new ArrayList<Address>();
-    protected HashSet<String> addressHashSet = new HashSet<String>();
-    protected HDMKeychain hdmKeychain;
-    protected EnterpriseHDMKeychain enterpriseHDMKeychain;
-    protected HDAccount hdAccountHot;
-    protected HDAccount hdAccountMonitored;
+    protected List<Address>   privKeyAddresses   = new ArrayList<Address>();
+    protected List<Address>   watchOnlyAddresses = new ArrayList<Address>();
+    protected List<Address>   trashAddresses     = new ArrayList<Address>();
+    protected HashSet<String> addressHashSet     = new HashSet<String>();
+    protected HDMKeychain              hdmKeychain;
+    protected EnterpriseHDMKeychain    enterpriseHDMKeychain;
+    protected HDAccount                hdAccountHot;
+    protected HDAccount                hdAccountMonitored;
     protected List<DesktopHDMKeychain> desktopHDMKeychains;
 
     private AddressManager() {
@@ -70,7 +70,7 @@ public class AddressManager implements HDMKeychain.HDMAddressChangeDelegate,
     }
 
     private void initAliasAndVanityLen() {
-        Map<String, String> addressAlias = AbstractDb.addressProvider.getAliases();
+        Map<String, String>  addressAlias    = AbstractDb.addressProvider.getAliases();
         Map<String, Integer> vanityAddresses = AbstractDb.addressProvider.getVanitylens();
         if (addressAlias.size() == 0 && vanityAddresses.size() == 0) {
             return;
@@ -194,7 +194,7 @@ public class AddressManager implements HDMKeychain.HDMAddressChangeDelegate,
         // log.info("getInAddresses time : {} ,ins:{}", (System.currentTimeMillis() - begin), tx
         // .getIns().size());
         boolean isRegister = false;
-        Tx compressedTx;
+        Tx      compressedTx;
         tx = AbstractDb.hdAccountAddressProvider.updateOutHDAccountId(tx);
         if (txNotificationType != Tx.TxNotificationType.txSend) {
             compressedTx = compressTx(tx, inAddresses);
@@ -205,7 +205,7 @@ public class AddressManager implements HDMKeychain.HDMAddressChangeDelegate,
         HashSet<String> needNotifyAddressHashSet = new HashSet<String>();
 //        HashSet<String> needNotifyHDAccountHS = new HashSet<String>();
 //        HashSet<String> needNotifyHDAccountMonitoredHS = new HashSet<String>();
-        HashSet<String> needNotifyDesktopHDMHS = new HashSet<String>();
+        HashSet<String>  needNotifyDesktopHDMHS  = new HashSet<String>();
         HashSet<Integer> needNotifyHDAccountIdHS = new HashSet<Integer>();
 
 //        List<HDAccount.HDAccountAddress> relatedAddresses = new ArrayList<HDAccount
@@ -383,7 +383,7 @@ public class AddressManager implements HDMKeychain.HDMAddressChangeDelegate,
         }
         List<String> addressList = tx.getOutAddressList();
         addressList.addAll(inAddresses);
-        if (AbstractDb.hdAccountAddressProvider.getRelatedAddressCnt(addressList) > 0){
+        if (AbstractDb.hdAccountAddressProvider.getRelatedAddressCnt(addressList) > 0) {
             return true;
         }
 //        if (hasHDAccountHot()) {
@@ -625,7 +625,7 @@ public class AddressManager implements HDMKeychain.HDMAddressChangeDelegate,
         synchronized (lock) {
             if (hdmKeychain != null && hdmKeychain != keychain) {
                 throw new RuntimeException("can not add a different hdm keychain to address " +
-                        "manager");
+                                                   "manager");
             }
             if (hdmKeychain == keychain) {
                 return;
@@ -659,7 +659,7 @@ public class AddressManager implements HDMKeychain.HDMAddressChangeDelegate,
         synchronized (lock) {
             if (enterpriseHDMKeychain != null && enterpriseHDMKeychain != keychain) {
                 throw new RuntimeException("can not add a different enterprise hdm keychain to "
-                        + "address manager");
+                                                   + "address manager");
             }
             if (keychain == enterpriseHDMKeychain) {
                 return;
@@ -747,12 +747,12 @@ public class AddressManager implements HDMKeychain.HDMAddressChangeDelegate,
         }
     }
 
-//    @Override
+    //    @Override
     public void hdmAddressAdded(HDMAddress address) {
         addressHashSet.add(address.getAddress());
     }
 
-//    @Override
+    //    @Override
     public void enterpriseHDMKeychainAddedAddress(EnterpriseHDMAddress address) {
         if (address != null) {
             addressHashSet.add(address.getAddress());
@@ -1006,7 +1006,7 @@ public class AddressManager implements HDMKeychain.HDMAddressChangeDelegate,
         HashMap<String, Address> result = new HashMap<String, Address>();
         for (In in : tx.getIns()) {
             Script pubKeyScript = new Script(in.getPrevOutScript());
-            String address = pubKeyScript.getToAddress();
+            String address      = pubKeyScript.getToAddress();
             for (Address privKey : this.getPrivKeyAddresses()) {
                 if (Utils.compareString(address, privKey.address)) {
                     result.put(address, privKey);

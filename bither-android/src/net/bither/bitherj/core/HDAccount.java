@@ -46,9 +46,9 @@ import java.util.List;
 import java.util.Set;
 
 public class HDAccount extends Address {
-    public static final String HDAccountPlaceHolder = "HDAccount";
+    public static final String HDAccountPlaceHolder          = "HDAccount";
     public static final String HDAccountMonitoredPlaceHolder = "HDAccountMonitored";
-    public static final int MaxUnusedNewAddressCount = 20;
+    public static final int    MaxUnusedNewAddressCount      = 20;
 
     public interface HDAccountGenerationDelegate {
         void onHDAccountGenerationProgress(double progress);
@@ -64,7 +64,7 @@ public class HDAccount extends Address {
     protected transient byte[] hdSeed;
     protected int hdSeedId = -1;
     protected boolean isFromXRandom;
-    private boolean hasSeed;
+    private   boolean hasSeed;
     private MnemonicCode mnemonicCode = MnemonicCode.instance();
 
     private static final Logger log = LoggerFactory.getLogger(HDAccount.class);
@@ -81,8 +81,8 @@ public class HDAccount extends Address {
         this.mnemonicCode = mnemonicCode;
         this.mnemonicSeed = mnemonicSeed;
         hdSeed = seedFromMnemonic(mnemonicCode, mnemonicSeed);
-        DeterministicKey master = HDKeyDerivation.createMasterPrivateKey(hdSeed);
-        EncryptedData encryptedHDSeed = new EncryptedData(hdSeed, password, isFromXRandom);
+        DeterministicKey master          = HDKeyDerivation.createMasterPrivateKey(hdSeed);
+        EncryptedData    encryptedHDSeed = new EncryptedData(hdSeed, password, isFromXRandom);
         EncryptedData encryptedMnemonicSeed = new EncryptedData(mnemonicSeed, password,
                                                                 isFromXRandom);
         DeterministicKey account = getAccount(master);
@@ -94,15 +94,24 @@ public class HDAccount extends Address {
     // Create With Random
     public HDAccount(SecureRandom random, CharSequence password, HDAccountGenerationDelegate generationDelegate) throws MnemonicException.MnemonicLengthException {
         isFromXRandom = random.getClass().getCanonicalName().indexOf("XRandom") >= 0;
+        LogUtil.i("---->", "--------------1");
         mnemonicSeed = new byte[16];
+        LogUtil.i("---->", "--------------2");
         random.nextBytes(mnemonicSeed);
+        LogUtil.i("---->", "--------------3");
         hdSeed = seedFromMnemonic(mnemonicCode, mnemonicSeed);
+        LogUtil.i("---->", "--------------4");
         EncryptedData encryptedHDSeed = new EncryptedData(hdSeed, password, isFromXRandom);
+        LogUtil.i("---->", "--------------5");
         EncryptedData encryptedMnemonicSeed = new EncryptedData(mnemonicSeed, password,
                                                                 isFromXRandom);
+        LogUtil.i("---->", "--------------6");
         DeterministicKey master = HDKeyDerivation.createMasterPrivateKey(hdSeed);
+        LogUtil.i("---->", "--------------7");
         DeterministicKey account = getAccount(master);
+        LogUtil.i("---->", "--------------8");
         account.clearPrivateKey();
+        LogUtil.i("---->", "--------------9");
         initHDAccount(account, encryptedMnemonicSeed, encryptedHDSeed, isFromXRandom, true,
                       generationDelegate);
     }
@@ -115,9 +124,9 @@ public class HDAccount extends Address {
         mnemonicSeed = encryptedMnemonicSeed.decrypt(password);
         hdSeed = seedFromMnemonic(mnemonicCode, mnemonicSeed);
         isFromXRandom = encryptedMnemonicSeed.isXRandom();
-        EncryptedData encryptedHDSeed = new EncryptedData(hdSeed, password, isFromXRandom);
-        DeterministicKey master = HDKeyDerivation.createMasterPrivateKey(hdSeed);
-        DeterministicKey account = getAccount(master);
+        EncryptedData    encryptedHDSeed = new EncryptedData(hdSeed, password, isFromXRandom);
+        DeterministicKey master          = HDKeyDerivation.createMasterPrivateKey(hdSeed);
+        DeterministicKey account         = getAccount(master);
         account.clearPrivateKey();
         initHDAccount(account, encryptedMnemonicSeed, encryptedHDSeed, isFromXRandom,
                       isSyncedComplete, null);
@@ -147,6 +156,19 @@ public class HDAccount extends Address {
                                EncryptedData encryptedHDSeed, boolean isFromXRandom, boolean
                                        isSyncedComplete, HDAccountGenerationDelegate
                                        generationDelegate) {
+        LogUtil.i("------------------------------------", "initHDAccount start");
+        LogUtil.i("------>path:", accountKey.getPathAsString());
+//        LogUtil.i("------>serializePrivB58:", accountKey.serializePrivB58());
+        LogUtil.i("------>serializePubB58:", accountKey.serializePubB58());
+        LogUtil.i("------>toAddress:", accountKey.toAddress());
+        LogUtil.i("------>encryptedMnemonicSeed isCompressed:", String.valueOf(encryptedMnemonicSeed.isCompressed()));
+        LogUtil.i("------>encryptedMnemonicSeed isXRandom:", String.valueOf(encryptedMnemonicSeed.isXRandom()));
+        LogUtil.i("------>encryptedMnemonicSeed EncryptedString:", encryptedMnemonicSeed.toEncryptedString());
+        LogUtil.i("------>encryptedHDSeed isCompressed:", String.valueOf(encryptedHDSeed.isCompressed()));
+        LogUtil.i("------>encryptedHDSeed isXRandom:", String.valueOf(encryptedHDSeed.isXRandom()));
+        LogUtil.i("------>isXRandom:", String.valueOf(isFromXRandom));
+        LogUtil.i("------>isSyncedComplete:", String.valueOf(isSyncedComplete));
+        LogUtil.i("------------------------------------", "initHDAccount end");
         this.isFromXRandom = isFromXRandom;
         double progress = 0;
         if (generationDelegate != null) {
@@ -166,8 +188,8 @@ public class HDAccount extends Address {
         if (checkDuplicated(externalKey.getPubKeyExtended(), internalKey.getPubKeyExtended())) {
             throw new DuplicatedHDAccountException();
         }
-        DeterministicKey key = externalKey.deriveSoftened(0);
-        String firstAddress = key.toAddress();
+        DeterministicKey key          = externalKey.deriveSoftened(0);
+        String           firstAddress = key.toAddress();
         accountKey.wipe();
 
         progress += GenerationPreStartProgress;
@@ -277,8 +299,8 @@ public class HDAccount extends Address {
     private void supplyNewInternalKey(int count, boolean isSyncedComplete) {
         DeterministicKey root = HDKeyDerivation.createMasterPubKeyFromExtendedBytes
                 (getInternalPub());
-        int firstIndex = allGeneratedInternalAddressCount();
-        ArrayList<HDAccountAddress> as = new ArrayList<HDAccountAddress>();
+        int                         firstIndex = allGeneratedInternalAddressCount();
+        ArrayList<HDAccountAddress> as         = new ArrayList<HDAccountAddress>();
         for (int i = firstIndex;
              i < firstIndex + count;
              i++) {
@@ -292,8 +314,8 @@ public class HDAccount extends Address {
     private void supplyNewExternalKey(int count, boolean isSyncedComplete) {
         DeterministicKey root = HDKeyDerivation.createMasterPubKeyFromExtendedBytes
                 (getExternalPub());
-        int firstIndex = allGeneratedExternalAddressCount();
-        ArrayList<HDAccountAddress> as = new ArrayList<HDAccountAddress>();
+        int                         firstIndex = allGeneratedExternalAddressCount();
+        ArrayList<HDAccountAddress> as         = new ArrayList<HDAccountAddress>();
         for (int i = firstIndex;
              i < firstIndex + count;
              i++) {
@@ -415,15 +437,15 @@ public class HDAccount extends Address {
         List<Tx> txs = AbstractDb.hdAccountAddressProvider.getHDAccountUnconfirmedTx(this.hdSeedId);
         Collections.sort(txs);
 
-        Set<byte[]> invalidTx = new HashSet<byte[]>();
-        Set<OutPoint> spentOut = new HashSet<OutPoint>();
+        Set<byte[]>   invalidTx  = new HashSet<byte[]>();
+        Set<OutPoint> spentOut   = new HashSet<OutPoint>();
         Set<OutPoint> unspendOut = new HashSet<OutPoint>();
 
         for (int i = txs.size() - 1;
              i >= 0;
              i--) {
             Set<OutPoint> spent = new HashSet<OutPoint>();
-            Tx tx = txs.get(i);
+            Tx            tx    = txs.get(i);
 
             Set<byte[]> inHashes = new HashSet<byte[]>();
             for (In in : tx.getIns()) {
@@ -463,7 +485,7 @@ public class HDAccount extends Address {
     }
 
     public List<HDAccountAddress> getRelatedAddressesForTx(Tx tx, List<String> inAddresses) {
-        List<String> outAddressList = new ArrayList<String>();
+        List<String>           outAddressList       = new ArrayList<String>();
         List<HDAccountAddress> hdAccountAddressList = new ArrayList<HDAccountAddress>();
         for (Out out : tx.getOuts()) {
             String outAddress = out.getOutAddress();
@@ -498,7 +520,7 @@ public class HDAccount extends Address {
         if (password != null && !hasPrivKey()) {
             throw new RuntimeException("Can not sign without private key");
         }
-        Tx tx = newTx(toAddresses, amounts);
+        Tx                     tx               = newTx(toAddresses, amounts);
         List<HDAccountAddress> signingAddresses = getSigningAddressesForInputs(tx.getIns());
         assert signingAddresses.size() == tx.getIns().size();
 
@@ -522,8 +544,8 @@ public class HDAccount extends Address {
         for (int i = 0;
              i < signingAddresses.size();
              i++) {
-            HDAccountAddress a = signingAddresses.get(i);
-            byte[] unsigned = unsignedHashes.get(i);
+            HDAccountAddress a        = signingAddresses.get(i);
+            byte[]           unsigned = unsignedHashes.get(i);
 
             if (!addressToKeyMap.containsKey(a.getAddress())) {
                 if (a.getPathType() == AbstractHD.PathType.EXTERNAL_ROOT_PATH) {
@@ -584,8 +606,8 @@ public class HDAccount extends Address {
             for (int i = 0;
                  i < signingAddresses.size();
                  i++) {
-                HDAccountAddress a = signingAddresses.get(i);
-                byte[] unsigned = unsignedHashes.get(i);
+                HDAccountAddress a        = signingAddresses.get(i);
+                byte[]           unsigned = unsignedHashes.get(i);
 
                 if (!addressToKeyMap.containsKey(a.getAddress())) {
                     if (a.getPathType() == AbstractHD.PathType.EXTERNAL_ROOT_PATH) {
@@ -634,10 +656,10 @@ public class HDAccount extends Address {
             for (int i = 0;
                  i < tx.getIns().size();
                  i++) {
-                byte[] unsigned = unsignedHashes.get(i);
-                DeterministicKey xPrivate = getAccount(master);
+                byte[]           unsigned    = unsignedHashes.get(i);
+                DeterministicKey xPrivate    = getAccount(master);
                 DeterministicKey pathPrivate = xPrivate.deriveSoftened(path.getValue());
-                DeterministicKey key = pathPrivate.deriveSoftened(index);
+                DeterministicKey key         = pathPrivate.deriveSoftened(index);
                 pathPrivate.wipe();
                 assert key != null;
                 TransactionSignature signature = new TransactionSignature(key.sign(unsigned, null),
@@ -661,7 +683,7 @@ public class HDAccount extends Address {
     public List<Tx> newForkTx(String toAddress, Long amount, SplitCoin splitCoin) throws TxBuilderException,
             MnemonicException.MnemonicLengthException {
         List<Out> outs = AbstractDb.hdAccountAddressProvider.getUnspentOutputByBlockNo(splitCoin.getForkBlockHeight(), hdSeedId);
-        List<Tx> txs = TxBuilder.getInstance().buildSplitCoinTxsFromAllAddress(outs, toAddress, Arrays.asList(amount), Arrays.asList(toAddress), splitCoin);
+        List<Tx>  txs  = TxBuilder.getInstance().buildSplitCoinTxsFromAllAddress(outs, toAddress, Arrays.asList(amount), Arrays.asList(toAddress), splitCoin);
         return txs;
     }
 
@@ -751,8 +773,8 @@ public class HDAccount extends Address {
     }
 
     public List<Tx> getRecentlyTxsWithConfirmationCntLessThan(int confirmationCnt, int limit) {
-        List<Tx> txList = new ArrayList<Tx>();
-        int blockNo = BlockChain.getInstance().getLastBlock().getBlockNo() - confirmationCnt + 1;
+        List<Tx> txList  = new ArrayList<Tx>();
+        int      blockNo = BlockChain.getInstance().getLastBlock().getBlockNo() - confirmationCnt + 1;
         for (Tx tx : AbstractDb.hdAccountAddressProvider.getRecentlyTxsByAccount(this.hdSeedId, blockNo, limit)) {
             txList.add(tx);
         }
@@ -785,9 +807,9 @@ public class HDAccount extends Address {
     }
 
     protected DeterministicKey getAccount(DeterministicKey master) {
-        DeterministicKey purpose = master.deriveHardened(44);
+        DeterministicKey purpose  = master.deriveHardened(44);
         DeterministicKey coinType = purpose.deriveHardened(0);
-        DeterministicKey account = coinType.deriveHardened(0);
+        DeterministicKey account  = coinType.deriveHardened(0);
         purpose.wipe();
         coinType.wipe();
         return account;
@@ -819,18 +841,20 @@ public class HDAccount extends Address {
             return;
         }
         String encrypted = getEncryptedMnemonicSeed();
+        LogUtil.i("------------------------------------", "decryptMnemonicSeed start");
         LogUtil.i("------>encrypted:", encrypted);
         if (!Utils.isEmpty(encrypted)) {
             mnemonicSeed = new EncryptedData(encrypted).decrypt(password);
             LogUtil.i("------>mnemonicSeed:", new String(mnemonicSeed));
         }
+        LogUtil.i("------------------------------------", "decryptMnemonicSeed end");
     }
 
     public List<String> getSeedWords(CharSequence password) throws MnemonicException
             .MnemonicLengthException {
         decryptMnemonicSeed(password);
         List<String> words = mnemonicCode.toMnemonic(mnemonicSeed);
-        for(String word : words){
+        for (String word : words) {
             LogUtil.i("------>word:", word);
         }
         wipeMnemonicSeed();
@@ -859,15 +883,15 @@ public class HDAccount extends Address {
     }
 
     protected String getFirstAddressFromSeed(CharSequence password) {
-        DeterministicKey key = getExternalKey(0, password);
-        String address = Utils.toAddress(key.getPubKeyHash());
+        DeterministicKey key     = getExternalKey(0, password);
+        String           address = Utils.toAddress(key.getPubKeyHash());
         key.wipe();
         return address;
     }
 
     public DeterministicKey getExternalKey(int index, CharSequence password) {
         try {
-            DeterministicKey master = masterKey(password);
+            DeterministicKey master     = masterKey(password);
             DeterministicKey accountKey = getAccount(master);
             DeterministicKey externalChainRoot = getChainRootKey(accountKey, AbstractHD.PathType
                     .EXTERNAL_ROOT_PATH);
@@ -885,7 +909,7 @@ public class HDAccount extends Address {
 
     public DeterministicKey getInternalKey(int index, CharSequence password) {
         try {
-            DeterministicKey master = masterKey(password);
+            DeterministicKey master     = masterKey(password);
             DeterministicKey accountKey = getAccount(master);
             DeterministicKey externalChainRoot = getChainRootKey(accountKey, AbstractHD.PathType
                     .INTERNAL_ROOT_PATH);
@@ -903,11 +927,11 @@ public class HDAccount extends Address {
 
     public String xPubB58(CharSequence password) throws MnemonicException
             .MnemonicLengthException {
-        DeterministicKey master = masterKey(password);
-        DeterministicKey purpose = master.deriveHardened(44);
+        DeterministicKey master   = masterKey(password);
+        DeterministicKey purpose  = master.deriveHardened(44);
         DeterministicKey coinType = purpose.deriveHardened(0);
-        DeterministicKey account = coinType.deriveHardened(0);
-        String xpub = account.serializePubB58();
+        DeterministicKey account  = coinType.deriveHardened(0);
+        String           xpub     = account.serializePubB58();
         master.wipe();
         purpose.wipe();
         coinType.wipe();
@@ -933,8 +957,8 @@ public class HDAccount extends Address {
         return hdSeedId;
     }
 
-    public static final byte[] seedFromMnemonic(MnemonicCode mnemonicCode, byte[] mnemonicSeed) throws MnemonicException
-            .MnemonicLengthException {
+    public static final byte[] seedFromMnemonic(MnemonicCode mnemonicCode, byte[] mnemonicSeed) throws MnemonicException.MnemonicLengthException {
+        LogUtil.i("mnemonicCode:", mnemonicCode.toString());
         return mnemonicCode.toSeed(mnemonicCode.toMnemonic(mnemonicSeed), "");
     }
 
@@ -943,13 +967,13 @@ public class HDAccount extends Address {
     }
 
     public static class HDAccountAddress {
-        private String address;
-        private byte[] pub;
-        private int index;
+        private String              address;
+        private byte[]              pub;
+        private int                 index;
         private AbstractHD.PathType pathType;
-        private boolean isSyncedComplete;
-        private boolean isIssued;
-        private long balance;
+        private boolean             isSyncedComplete;
+        private boolean             isIssued;
+        private long                balance;
 
 
         private int hdAccountId;
@@ -1024,13 +1048,13 @@ public class HDAccount extends Address {
             List<Tx> txs = AbstractDb.txProvider.getUnconfirmedTxWithAddress(this.address);
             Collections.sort(txs);
 
-            Set<byte[]> invalidTx = new HashSet<byte[]>();
-            Set<OutPoint> spentOut = new HashSet<OutPoint>();
+            Set<byte[]>   invalidTx  = new HashSet<byte[]>();
+            Set<OutPoint> spentOut   = new HashSet<OutPoint>();
             Set<OutPoint> unspendOut = new HashSet<OutPoint>();
 
             for (int i = txs.size() - 1; i >= 0; i--) {
                 Set<OutPoint> spent = new HashSet<OutPoint>();
-                Tx tx = txs.get(i);
+                Tx            tx    = txs.get(i);
 
                 Set<byte[]> inHashes = new HashSet<byte[]>();
                 for (In in : tx.getIns()) {
@@ -1080,8 +1104,8 @@ public class HDAccount extends Address {
     public List<HDAccountAddress> getHdHotAddresses(int page, AbstractHD.PathType pathType, CharSequence password) {
         ArrayList<HDAccountAddress> addresses = new ArrayList<HDAccountAddress>();
         try {
-            DeterministicKey master = masterKey(password);
-            DeterministicKey accountKey = getAccount(master);
+            DeterministicKey master      = masterKey(password);
+            DeterministicKey accountKey  = getAccount(master);
             DeterministicKey pathTypeKey = getChainRootKey(accountKey, pathType);
             for (int i = (page - 1) * 10; i < page * 10; i++) {
                 DeterministicKey key = pathTypeKey.deriveSoftened(i);

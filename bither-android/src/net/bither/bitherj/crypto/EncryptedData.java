@@ -20,7 +20,9 @@ public class EncryptedData {
     public EncryptedData(String str) {
         String[] strs = QRCodeUtil.splitOfPasswordSeed(str);
         for (String data : strs) {
+            LogUtil.i("------------------------------------", "EncryptedData start");
             LogUtil.i("------>strs:", data);
+            LogUtil.i("------------------------------------", "EncryptedData end");
         }
         if (strs.length != 3) {
             log.error("decryption: EncryptedData format error");
@@ -52,7 +54,9 @@ public class EncryptedData {
     }
 
     public byte[] decrypt(CharSequence password) {
+        LogUtil.i("------------------------------------", "decrypt start");
         LogUtil.i("------>password:", password.toString());
+        LogUtil.i("------------------------------------", "decrypt start");
         KeyCrypterScrypt crypter = new KeyCrypterScrypt(saltForQRCode.getSalt());
         return crypter.decrypt(new EncryptedPrivateKey(initialisationVector, encryptedData), crypter.deriveKey(password));
     }

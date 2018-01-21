@@ -54,9 +54,9 @@ import java.util.ArrayList;
  */
 public class AddAddressHotHDAccountFragment extends Fragment implements AddHotAddressActivity
         .AddAddress {
-    private CheckBox cbxXRandom;
+    private CheckBox       cbxXRandom;
     private DialogProgress dp;
-    private HDAccount hdAccount;
+    private HDAccount      hdAccount;
 
 
     @Override

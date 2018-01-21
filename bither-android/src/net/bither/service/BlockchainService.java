@@ -57,16 +57,16 @@ import javax.annotation.Nonnull;
 
 public class BlockchainService extends android.app.Service {
 
-    public static final String ACTION_BEGIN_DOWLOAD_SPV_BLOCK = R.class
+    public static final  String ACTION_BEGIN_DOWLOAD_SPV_BLOCK = R.class
             .getPackage().getName() + ".dowload_block_api_begin";
-    private static final Logger log = LoggerFactory
+    private static final Logger log                            = LoggerFactory
             .getLogger(BlockchainService.class);
-    private WakeLock wakeLock;
-    private long serviceCreatedAt;
+    private WakeLock    wakeLock;
+    private long        serviceCreatedAt;
     private BitherTimer mBitherTimer;
     private SPVFinishedReceiver spvFinishedReceiver = null;
-    private TickReceiver tickReceiver = null;
-    private TxReceiver txReceiver = null;
+    private TickReceiver        tickReceiver        = null;
+    private TxReceiver          txReceiver          = null;
 
     private boolean connectivityReceivered = false;
 
@@ -79,8 +79,8 @@ public class BlockchainService extends android.app.Service {
         serviceCreatedAt = System.currentTimeMillis();
         log.info(".onCreate()");
         super.onCreate();
-        final String lockName = getPackageName() + " blockchain sync";
-        final PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        final String       lockName = getPackageName() + " blockchain sync";
+        final PowerManager pm       = (PowerManager) getSystemService(Context.POWER_SERVICE);
         wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, lockName);
         if (AppSharedPreference.getInstance().getAppMode() != BitherjSettings.AppMode.COLD) {
             tickReceiver = new TickReceiver(BlockchainService.this);
@@ -127,9 +127,9 @@ public class BlockchainService extends android.app.Service {
             }
         }
         final AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context
-                .ALARM_SERVICE);
+                                                                                          .ALARM_SERVICE);
         final PendingIntent alarmIntent = PendingIntent.getService(context, 0,
-                new Intent(context, BlockchainService.class), 0);
+                                                                   new Intent(context, BlockchainService.class), 0);
         alarmManager.cancel(alarmIntent);
         final long now = System.currentTimeMillis();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
@@ -140,7 +140,7 @@ public class BlockchainService extends android.app.Service {
         // workaround for no inexact set() before KitKat
         {
             alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, now + interval,
-                    AlarmManager.INTERVAL_HOUR, alarmIntent);
+                                             AlarmManager.INTERVAL_HOUR, alarmIntent);
         }
     }
 
@@ -174,8 +174,8 @@ public class BlockchainService extends android.app.Service {
         super.onDestroy();
 
         log.info("service was up for "
-                + ((System.currentTimeMillis() - serviceCreatedAt) / 1000 / 60)
-                + " minutes");
+                         + ((System.currentTimeMillis() - serviceCreatedAt) / 1000 / 60)
+                         + " minutes");
     }
 
     @Override
@@ -265,7 +265,7 @@ public class BlockchainService extends android.app.Service {
                 return;
             }
             final boolean hasEverything = hasConnectivity && hasStorage;
-            NetworkType networkType = NetworkUtil.isConnectedType();
+            NetworkType   networkType   = NetworkUtil.isConnectedType();
             boolean networkIsAvailadble = (!AppSharedPreference.getInstance().getSyncBlockOnlyWifi())
                     || (networkType == NetworkType.Wifi);
 

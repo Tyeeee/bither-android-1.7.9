@@ -156,8 +156,10 @@ public class KeyCrypterScrypt implements KeyCrypter, Serializable {
     public byte[] decrypt(EncryptedPrivateKey privateKeyToDecode, KeyParameter aesKey) throws KeyCrypterException {
         checkNotNull(privateKeyToDecode);
         checkNotNull(aesKey);
+        LogUtil.i("------------------------------------", "decrypt start");
         LogUtil.i("------>privateKeyToDecode:", privateKeyToDecode.toString());
         LogUtil.i("------>aesKey:", new String(aesKey.getKey()));
+        LogUtil.i("------------------------------------", "decrypt end");
         try {
             ParametersWithIV keyWithIv = new ParametersWithIV(new KeyParameter(aesKey.getKey()), privateKeyToDecode.getInitialisationVector());
 
